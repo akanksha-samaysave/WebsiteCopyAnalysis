@@ -1,0 +1,210 @@
+{
+  "title": "API Response Examples",
+  "endpoints": {
+    "POST /api/analyze": {
+      "request": {
+        "urls": [
+          "https://www.example1.com",
+          "https://www.example2.com",
+          "https://www.example3.com"
+        ]
+      },
+      "response": {
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "status": "pending",
+        "urls_count": 3
+      }
+    },
+    "GET /api/analysis/{job_id}": {
+      "response": {
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "all_completed": true,
+        "results": [
+          {
+            "website_url": "https://www.example1.com",
+            "status": "completed",
+            "scores": [
+              {
+                "category": "design",
+                "score": 8.5,
+                "details": {}
+              },
+              {
+                "category": "messaging",
+                "score": 7.2,
+                "details": {}
+              },
+              {
+                "category": "trust",
+                "score": 9.1,
+                "details": {}
+              },
+              {
+                "category": "clarity",
+                "score": 8.8,
+                "details": {}
+              },
+              {
+                "category": "conversion",
+                "score": 7.6,
+                "details": {}
+              },
+              {
+                "category": "ux",
+                "score": 8.3,
+                "details": {}
+              }
+            ],
+            "recommendations": [
+              {
+                "priority": "High",
+                "title": "Strengthen Primary Headline",
+                "description": "Rewrite your main headline to include a specific number, outcome, or benefit. Add emotional triggers or power words.",
+                "reasoning": "Headline strength score is only 5.2/10. Strong headlines are 3-15 words and include specific outcomes.",
+                "category": "copywriting"
+              },
+              {
+                "priority": "High",
+                "title": "Improve Content Readability",
+                "description": "Break text into shorter paragraphs (3-4 sentences), add subheadings every 100 words, use bullet points for lists.",
+                "reasoning": "Readability score is 5.8/10. Scannable content improves engagement and conversion.",
+                "category": "ux"
+              },
+              {
+                "priority": "Medium",
+                "title": "Add Social Proof Section",
+                "description": "Include customer testimonials, reviews, ratings, customer count, case studies, or 'as seen in' logos.",
+                "reasoning": "Social proof score is 4.2/10. Third-party validation increases trust and conversion.",
+                "category": "trust"
+              }
+            ],
+            "metadata": {
+              "copy_scores": {
+                "headline_strength": 5.2,
+                "emotional_triggers": 6.1,
+                "value_proposition": 7.3,
+                "features_vs_benefits": 6.8,
+                "cta_strength": 7.5
+              },
+              "ux_scores": {
+                "readability": 5.8,
+                "visual_hierarchy": 7.2,
+                "mobile_responsiveness": 8.9,
+                "information_density": 6.5,
+                "conversion_friction": 7.8
+              },
+              "trust_scores": {
+                "social_proof": 4.2,
+                "authority_signals": 6.5,
+                "security_trust": 8.1,
+                "credibility_signals": 7.3
+              },
+              "category_scores": {
+                "design": 8.5,
+                "messaging": 7.2,
+                "trust": 9.1,
+                "clarity": 8.8,
+                "conversion": 7.6,
+                "ux": 8.3
+              },
+              "overall_score": 83.2,
+              "sections": {
+                "detected_sections": {
+                  "hero": true,
+                  "problem": true,
+                  "solution": true,
+                  "benefits": true,
+                  "features": true,
+                  "testimonials": true,
+                  "pricing": false,
+                  "faq": true,
+                  "cta": true
+                },
+                "total_sections": 8,
+                "section_count": 12
+              }
+            }
+          }
+        ]
+      }
+    },
+    "GET /api/comparison/{job_id}": {
+      "response": {
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "websites": [
+          {
+            "url": "https://www.example1.com",
+            "domain": "example1.com",
+            "overall_score": 83.2,
+            "scores": {
+              "design": 8.5,
+              "messaging": 7.2,
+              "trust": 9.1,
+              "clarity": 8.8,
+              "conversion": 7.6,
+              "ux": 8.3
+            }
+          },
+          {
+            "url": "https://www.example2.com",
+            "domain": "example2.com",
+            "overall_score": 76.5,
+            "scores": {
+              "design": 7.8,
+              "messaging": 6.9,
+              "trust": 8.2,
+              "clarity": 7.5,
+              "conversion": 6.8,
+              "ux": 7.1
+            }
+          },
+          {
+            "url": "https://www.example3.com",
+            "domain": "example3.com",
+            "overall_score": 71.3,
+            "scores": {
+              "design": 6.9,
+              "messaging": 6.1,
+              "trust": 7.5,
+              "clarity": 6.8,
+              "conversion": 6.0,
+              "ux": 6.5
+            }
+          }
+        ],
+        "ranking": [
+          {
+            "url": "https://www.example1.com",
+            "domain": "example1.com",
+            "overall_score": 83.2
+          },
+          {
+            "url": "https://www.example2.com",
+            "domain": "example2.com",
+            "overall_score": 76.5
+          },
+          {
+            "url": "https://www.example3.com",
+            "domain": "example3.com",
+            "overall_score": 71.3
+          }
+        ],
+        "best_category": {
+          "category": "trust",
+          "average_score": 8.27
+        },
+        "worst_category": {
+          "category": "conversion",
+          "average_score": 6.8
+        }
+      }
+    },
+    "POST /api/report/{job_id}": {
+      "response": {
+        "pdf_path": "/app/reports/550e8400-e29b-41d4-a716-446655440000.pdf",
+        "download_url": "/api/report-download/550e8400-e29b-41d4-a716-446655440000",
+        "generated_at": "2024-01-15T10:30:45.123456"
+      }
+    }
+  }
+}
