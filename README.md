@@ -83,7 +83,6 @@ landing-page-intelligence/
 │   │   └── utils/                  # Helper functions
 │   │       ├── __init__.py
 │   │       └── helpers.py
-│   ├── Dockerfile
 │   ├── requirements.txt
 │   └── run.py
 ├── frontend/
@@ -106,14 +105,11 @@ landing-page-intelligence/
 │   │   ├── App.jsx                 # Main component
 │   │   ├── main.jsx                # Entry point
 │   │   └── index.css               # Tailwind styles
-│   ├── Dockerfile
 │   ├── package.json
 │   ├── vite.config.js
 │   ├── tailwind.config.js
 │   ├── postcss.config.js
 │   └── index.html
-├── docker-compose.yml
-├── .env.example
 ├── .gitignore
 └── README.md
 ```
