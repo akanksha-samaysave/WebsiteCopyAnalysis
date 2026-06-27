@@ -138,33 +138,7 @@ landing-page-intelligence/
 - **Lucide React** - Icons
 - **React Router** - Client-side routing
 
-### DevOps
-- **Docker** - Containerization
-- **docker-compose** - Multi-container orchestration
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Docker & Docker Compose (recommended)
-- OR Python 3.11+ & Node.js 18+
-
-### Quick Start with Docker
-
-1. **Clone the repository**
-```bash
-cd landing-page-intelligence
-```
-
-2. **Copy environment variables**
-```bash
-cp .env.example .env
-```
-
-3. **Build and run all services**
-```bash
-docker-compose up --build
-```
 
 4. **Open the app**
 - Frontend: http://localhost:3000
@@ -512,49 +486,14 @@ playwright install chromium
 
 ## 🚀 Production Deployment
 
-### Using Docker in Production
 
-1. **Build images**
-```bash
-docker-compose build
-```
-
-2. **Run containers**
-```bash
-docker-compose up -d
-```
-
-3. **Setup reverse proxy** (nginx)
-```nginx
-upstream backend {
-    server backend:8000;
-}
-
-upstream frontend {
-    server frontend:3000;
-}
-
-server {
-    listen 80;
-    server_name example.com;
-
-    location /api {
-        proxy_pass http://backend;
-    }
-
-    location / {
-        proxy_pass http://frontend;
-    }
-}
-```
-
-4. **Use PostgreSQL instead of SQLite**
+1. **Use PostgreSQL instead of SQLite**
 ```python
 # In database.py
 DATABASE_URL = "postgresql://user:password@db:5432/analytics"
 ```
 
-5. **Setup SSL with Let's Encrypt**
+2. **Setup SSL with Let's Encrypt**
 ```bash
 certbot certonly --standalone -d example.com
 ```
