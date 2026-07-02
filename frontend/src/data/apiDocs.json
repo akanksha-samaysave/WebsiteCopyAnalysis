@@ -1,0 +1,53 @@
+{
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/analyze",
+      "description": "Submit a website for mock CRO analysis.",
+      "status": "200 OK",
+      "request": {
+        "url": "https://github.com",
+        "includeScreenshot": true
+      },
+      "response": {
+        "job_id": "job_4821",
+        "status": "queued"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/analysis/{job_id}",
+      "description": "Retrieve the latest analysis state for a submitted job.",
+      "status": "200 OK",
+      "request": {
+        "job_id": "job_4821"
+      },
+      "response": {
+        "status": "completed",
+        "overall_score": 84
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/report/{job_id}",
+      "description": "Download or inspect the generated report payload.",
+      "status": "200 OK",
+      "request": {
+        "job_id": "job_4821"
+      },
+      "response": {
+        "report_url": "/reports/job_4821.pdf"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "description": "Check the mock service status.",
+      "status": "200 OK",
+      "request": {},
+      "response": {
+        "status": "ok"
+      }
+    }
+  ]
+}

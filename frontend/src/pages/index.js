@@ -1,3 +1,5 @@
 export { HomePage } from './HomePage'
+export { AnalysisPage } from './AnalysisPage'
 export { DashboardPage } from './DashboardPage'
-export { ComparisonPage } from './ComparisonPage'
+export { ReportPage } from './ReportPage'
+export { ApiDocsPage } from './ApiDocsPage'

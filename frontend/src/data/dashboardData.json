@@ -1,0 +1,52 @@
+{
+  "site": {
+    "name": "GitHub",
+    "url": "https://github.com",
+    "summary": "Strong clarity and product storytelling with a few opportunities to improve primary CTA emphasis."
+  },
+  "overallScore": 84,
+  "scores": [
+    { "label": "UX Score", "score": 86, "max": 100, "color": "from-sky-500 to-cyan-400" },
+    { "label": "Copywriting Score", "score": 81, "max": 100, "color": "from-violet-500 to-fuchsia-400" },
+    { "label": "CTA Score", "score": 76, "max": 100, "color": "from-amber-500 to-orange-400" },
+    { "label": "SEO Score", "score": 88, "max": 100, "color": "from-emerald-500 to-green-400" },
+    { "label": "Accessibility Score", "score": 79, "max": 100, "color": "from-rose-500 to-pink-400" }
+  ],
+  "chartData": [
+    { "name": "UX", "score": 86 },
+    { "name": "Copy", "score": 81 },
+    { "name": "CTA", "score": 76 },
+    { "name": "SEO", "score": 88 },
+    { "name": "A11y", "score": 79 }
+  ],
+  "recommendations": [
+    {
+      "priority": "High",
+      "title": "Reposition the primary CTA",
+      "description": "Give the main action more visual weight and reduce competing prompts above the fold.",
+      "reasoning": "CTA prominence strongly affects conversion intent."
+    },
+    {
+      "priority": "Medium",
+      "title": "Shorten supporting copy",
+      "description": "Trim the first screen to a tighter value proposition and faster next-step language.",
+      "reasoning": "Visitors scan quickly and respond to clarity."
+    },
+    {
+      "priority": "Low",
+      "title": "Add more trust cues",
+      "description": "Introduce social proof and customer outcomes near the core conversion area.",
+      "reasoning": "Trust signals reduce hesitation for first-time visitors."
+    }
+  ],
+  "strengths": [
+    "Clear product framing",
+    "Strong content hierarchy",
+    "Polished interaction patterns"
+  ],
+  "weaknesses": [
+    "CTA competition from secondary links",
+    "A few dense content sections",
+    "Limited social proof near the hero"
+  ]
+}

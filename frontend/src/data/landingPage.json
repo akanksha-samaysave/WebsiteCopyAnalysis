@@ -1,0 +1,45 @@
+{
+  "hero": {
+    "eyebrow": "AI-powered CRO intelligence",
+    "title": "Turn traffic into conversions with precision",
+    "description": "Audit landing pages, uncover friction points, and ship recommendations that elevate every visitor experience.",
+    "primaryCta": "Analyze Website",
+    "secondaryCta": "View API Docs"
+  },
+  "features": [
+    {
+      "title": "Instant UX diagnostics",
+      "description": "Surface weak CTAs, dense hero sections, and navigation issues in minutes.",
+      "icon": "Sparkles"
+    },
+    {
+      "title": "Copywriting intelligence",
+      "description": "Measure clarity, value prop strength, and trust signals across the page.",
+      "icon": "MessageSquareText"
+    },
+    {
+      "title": "Actionable CRO insights",
+      "description": "Prioritize the highest impact changes with evidence-backed recommendations.",
+      "icon": "BarChart3"
+    }
+  ],
+  "steps": [
+    {
+      "title": "Share the page",
+      "description": "Enter a URL or choose a sample from the built-in examples."
+    },
+    {
+      "title": "Review the analysis",
+      "description": "Inspect the score breakdown, charts, and recommendations in one place."
+    },
+    {
+      "title": "Ship fast improvements",
+      "description": "Use the report to focus on the next best changes for growth."
+    }
+  ],
+  "exampleUrls": [
+    "https://github.com",
+    "https://openai.com",
+    "https://vercel.com"
+  ]
+}

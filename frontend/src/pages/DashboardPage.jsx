@@ -1,297 +1,150 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import {
-  ScoreCard,
-  RadarChartComponent,
-  RecommendationCard,
-  LoadingSpinner,
-  ErrorAlert
-} from '../components'
-import { analysisService } from '../services/api'
-import { Download } from 'lucide-react'
+import React from 'react'
+import { motion } from 'framer-motion'
+import { ArrowRight, ExternalLink, Eye, Sparkles } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
+import dashboardData from '../data/dashboardData.json'
+import { RecommendationCard, ScoreCard } from '../components'
 
-const PENDING_STATUSES = new Set(['pending', 'processing'])
+const pieColors = ['#38bdf8', '#8b5cf6', '#fb923c', '#34d399', '#f43f5e']
 
 export const DashboardPage = () => {
-  const [searchParams] = useSearchParams()
-  const jobId = searchParams.get('jobId')
+  const { site, overallScore, scores, chartData, recommendations, strengths, weaknesses } = dashboardData
 
-  const [allAnalyses, setAllAnalyses] = useState([])
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [jobStatus, setJobStatus] = useState(null)
-  const [generating, setGenerating] = useState(false)
-
-  const intervalRef = useRef(null)
-
-  const fetchData = useCallback(async () => {
-    if (!jobId) return
-
-    try {
-      const res = await analysisService.getAnalysisResults(jobId)
-
-      const list = res?.analyses ?? []
-
-      setJobStatus(res?.status)
-      setAllAnalyses(list)
-
-      // stop polling when completed/failed
-      if (res?.status && !PENDING_STATUSES.has(res.status)) {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current)
-          intervalRef.current = null
-        }
-      }
-    } catch (err) {
-      setError(
-        err?.response?.data?.detail ||
-        err.message ||
-        'Failed to load analysis'
-      )
-
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-    }
-  }, [jobId])
-
-  useEffect(() => {
-    if (!jobId) return
-
-    fetchData()
-
-    intervalRef.current = setInterval(fetchData, 2000)
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [jobId, fetchData])
-
-  useEffect(() => {
-    if (selectedIndex >= allAnalyses.length && allAnalyses.length > 0) {
-      setSelectedIndex(0)
-    }
-  }, [allAnalyses.length, selectedIndex])
-
-  const currentAnalysis = allAnalyses[selectedIndex] ?? null
-
-  const handleDownloadReport = async () => {
-    try {
-      setGenerating(true)
-
-      await analysisService.generateReport(jobId)
-
-      const blob = await analysisService.downloadReport(jobId)
-
-      const url = window.URL.createObjectURL(blob)
-
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `analysis_${jobId}.pdf`
-      a.click()
-
-      window.URL.revokeObjectURL(url)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setGenerating(false)
-    }
-  }
-
-  if (loading && allAnalyses.length === 0) {
-    return (
-      <div className="min-h-screen py-12">
-        <div className="container text-center">
-          <LoadingSpinner />
-          <p className="mt-4 text-gray-300">
-            Analyzing your landing pages...
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen py-12">
-        <div className="container">
-          <ErrorAlert message={error} />
-        </div>
-      </div>
-    )
-  }
-
-  if (!currentAnalysis) {
-    return (
-      <div className="min-h-screen py-12">
-        <div className="container text-center">
-          {PENDING_STATUSES.has(jobStatus) ? (
-            <>
-              <LoadingSpinner />
-              <p className="mt-4 text-gray-300">
-                Analysis queued — results will appear shortly...
-              </p>
-            </>
-          ) : (
-            <p className="text-gray-300">
-              No analysis data available
-            </p>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  const scores = currentAnalysis.metadata?.category_scores ?? {}
-  const overall = currentAnalysis.metadata?.overall_score ?? 0
-  const recommendations = currentAnalysis.recommendations ?? []
+  const pieData = scores.map((item) => ({ name: item.label, value: item.score }))
 
   return (
-    <div className="min-h-screen py-12">
-      <div className="container">
-
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">
-              {currentAnalysis.website_url}
-            </h1>
-
-            <p className="text-gray-400">
-              Status:
-              <span className="capitalize ml-2">
-                {currentAnalysis.status}
-              </span>
-
-              {PENDING_STATUSES.has(jobStatus) && (
-                <span className="ml-2 text-yellow-400 text-sm">
-                  (updating...)
-                </span>
-              )}
-            </p>
-          </div>
-
-          {currentAnalysis.status === 'completed' && (
-            <button
-              onClick={handleDownloadReport}
-              className="btn btn-primary flex items-center gap-2"
-              disabled={generating}
-            >
-              <Download size={20} />
-              {generating ? 'Generating...' : 'Download Report'}
-            </button>
-          )}
+    <div className="container px-4 py-12 lg:py-16">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="mb-8 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/70 p-8 shadow-2xl shadow-slate-950/30 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Result dashboard</p>
+          <h1 className="mt-2 text-3xl font-semibold text-white">{site.name}</h1>
+          <p className="mt-3 max-w-2xl text-slate-400">{site.summary}</p>
+          <a href={site.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-sky-400">
+            {site.url} <ExternalLink size={16} />
+          </a>
         </div>
+        <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-5 py-4 text-center">
+          <p className="text-sm text-slate-400">Overall CRO Score</p>
+          <p className="text-4xl font-semibold text-white">{overallScore}/100</p>
+        </div>
+      </motion.div>
 
-        {allAnalyses.length > 1 && (
-          <div className="mb-8 flex gap-2 flex-wrap">
-            {allAnalyses.map((analysis, index) => (
-              <button
-                key={index}
-                onClick={() => setSelectedIndex(index)}
-                className={`px-4 py-2 rounded-lg transition ${
-                  selectedIndex === index
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                }`}
-              >
-                {(analysis.website_url || '').split('/')[2] ||
-                  `Site ${index + 1}`}
-              </button>
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {scores.map((item) => (
+              <ScoreCard key={item.label} label={item.label} score={item.score} max={100} />
             ))}
           </div>
-        )}
 
-        {currentAnalysis.status === 'completed' ? (
-          <>
-            <div className="mb-12 card p-8 text-center">
-              <p className="text-gray-400 mb-2">Overall Score</p>
-
-              <div className="text-6xl font-bold mb-4">
-                <span
-                  className={
-                    overall >= 80
-                      ? 'text-green-500'
-                      : overall >= 60
-                      ? 'text-yellow-500'
-                      : 'text-red-500'
-                  }
-                >
-                  {Number(overall).toFixed(0)}
-                </span>
-                <span className="text-2xl text-gray-400">/100</span>
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Performance trend</p>
+                <h2 className="text-xl font-semibold text-white">Score distribution</h2>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-300">
+                <Sparkles size={16} /> Healthy baseline
               </div>
             </div>
-
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6">
-                Category Breakdown
-              </h2>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <ScoreCard label="Design" score={scores.design ?? 0} />
-                <ScoreCard label="Messaging" score={scores.messaging ?? 0} />
-                <ScoreCard label="Trust" score={scores.trust ?? 0} />
-                <ScoreCard label="Clarity" score={scores.clarity ?? 0} />
-                <ScoreCard label="Conversion" score={scores.conversion ?? 0} />
-                <ScoreCard label="UX" score={scores.ux ?? 0} />
-              </div>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
+                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" domain={[0, 100]} />
+                  <Tooltip contentStyle={{ backgroundColor: '#020617', border: '1px solid #334155' }} />
+                  <Bar dataKey="score" radius={[8, 8, 0, 0]} fill="#38bdf8" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-
-            {Object.keys(scores).length > 0 && (
-              <div className="mb-12 card p-6">
-                <h2 className="text-xl font-bold mb-6">
-                  Performance Profile
-                </h2>
-
-                <RadarChartComponent
-                  data={scores}
-                  categories={Object.keys(scores)}
-                />
-              </div>
-            )}
-
-            <div>
-              <h2 className="text-2xl font-bold mb-6">
-                Recommendations
-              </h2>
-
-              <div className="space-y-4">
-                {recommendations.length > 0 ? (
-                  recommendations.map((rec, idx) => (
-                    <RecommendationCard
-                      key={idx}
-                      priority={rec.priority}
-                      title={rec.title}
-                      description={rec.description}
-                      reasoning={rec.reasoning}
-                    />
-                  ))
-                ) : (
-                  <p className="text-gray-400">
-                    No recommendations available yet
-                  </p>
-                )}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="text-center">
-            <LoadingSpinner />
-            <p className="mt-4 text-gray-300">
-              {currentAnalysis.status === 'failed'
-                ? `Analysis failed${
-                    currentAnalysis.metadata?.error
-                      ? ': ' + currentAnalysis.metadata.error
-                      : ''
-                  }`
-                : 'Still analyzing...'}
-            </p>
           </div>
-        )}
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Composition</p>
+            <h2 className="mt-2 text-xl font-semibold text-white">Area balance</h2>
+            <div className="mt-4 h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={95} paddingAngle={3}>
+                    {pieData.map((entry, index) => (
+                      <Cell key={entry.name} fill={pieColors[index % pieColors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: '#020617', border: '1px solid #334155' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Recommendations</p>
+                <h2 className="text-xl font-semibold text-white">Best next actions</h2>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {recommendations.map((item) => (
+                <RecommendationCard key={item.title} priority={item.priority} title={item.title} description={item.description} reasoning={item.reasoning} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
+          <div className="mb-4 flex items-center gap-2 text-sky-300">
+            <Eye size={18} />
+            <p className="text-sm font-semibold uppercase tracking-[0.3em]">Preview</p>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+            <div className="flex items-center gap-2 border-b border-slate-800 bg-slate-900 px-4 py-3">
+              <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+              <span className="ml-3 text-sm text-slate-400">{site.url}</span>
+            </div>
+            <div className="p-6">
+              <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800 p-6">
+                <p className="text-sm font-medium text-sky-400">Mocked preview</p>
+                <h3 className="mt-3 text-2xl font-semibold text-white">{site.name} landing experience</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-400">A polished interface with a clear headline, focused CTA, and space for product proof points.</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <span className="rounded-full bg-sky-500/10 px-3 py-1 text-sm font-medium text-sky-300">High clarity</span>
+                  <span className="rounded-full bg-violet-500/10 px-3 py-1 text-sm font-medium text-violet-300">Strong structure</span>
+                  <span className="rounded-full bg-amber-500/10 px-3 py-1 text-sm font-medium text-amber-300">CTA refinement</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Snapshot</p>
+          <h2 className="mt-2 text-xl font-semibold text-white">Strengths and watch-outs</h2>
+          <div className="mt-6 space-y-4">
+            <div>
+              <p className="mb-2 text-sm font-semibold text-emerald-300">Strengths</p>
+              <ul className="space-y-2 text-sm text-slate-400">
+                {strengths.map((item) => <li key={item} className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2">{item}</li>)}
+              </ul>
+            </div>
+            <div>
+              <p className="mb-2 text-sm font-semibold text-amber-300">Weaknesses</p>
+              <ul className="space-y-2 text-sm text-slate-400">
+                {weaknesses.map((item) => <li key={item} className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2">{item}</li>)}
+              </ul>
+            </div>
+          </div>
+          <Link to="/report" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-400">
+            View full report <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
     </div>
   )
